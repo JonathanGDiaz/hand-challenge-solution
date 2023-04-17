@@ -1,18 +1,18 @@
 function solution (input) {
   const instruction = Array.from(input)
+
+  // Constant values
   const MAX = 255
   const MIN = 0
+
   const memory = []
   let pointer = 0
   let index = 0
   let result = ''
+
   const actions = {
-    '👉': () => {
-      pointer++
-    },
-    '👈': () => {
-      pointer--
-    },
+    '👉': () => { pointer++ },
+    '👈': () => { pointer-- },
     '👆': () => {
       if (memory[pointer] === undefined) memory[pointer] = MIN
       if (memory[pointer] + 1 > MAX) memory[pointer] = MIN
@@ -25,16 +25,28 @@ function solution (input) {
     },
     '🤜': () => {
       if (memory[pointer] === MIN) {
-        const tempInstruction = instruction.slice(index)
-        const tempIndex = tempInstruction.indexOf('🤛')
-        index = tempIndex
+        let nestingLevel = 1
+        for (let i = index + 1; i < instruction.length; i++) {
+          if (instruction[i] === '🤛') nestingLevel--
+          if (instruction[i] === '🤜') nestingLevel++
+          if (nestingLevel === 0) {
+            index = i
+            break
+          }
+        }
       }
     },
     '🤛': () => {
       if (memory[pointer] !== MIN) {
-        const tempInstruction = instruction.slice(0, index)
-        const tempIndex = tempInstruction.lastIndexOf('🤜')
-        index = tempIndex
+        let nestingLevel = 1
+        for (let i = index - 1; i >= 0; i--) {
+          if (instruction[i] === '🤛') nestingLevel++
+          if (instruction[i] === '🤜') nestingLevel--
+          if (nestingLevel === 0) {
+            index = i
+            break
+          }
+        }
       }
     },
     '👊': () => {
@@ -46,6 +58,11 @@ function solution (input) {
     index++
   }
 
-  return result
+  console.log(result)
 }
-module.exports = solution
+
+// Hellow
+solution('👇🤜👇👇👇👇👇👇👇👉👆👈🤛👉👇👊👇🤜👇👉👆👆👆👆👆👈🤛👉👆👆👊👆👆👆👆👆👆👆👊👊👆👆👆👊')
+
+// Hellow World!
+solution('👉👆👆👆👆👆👆👆👆🤜👇👈👆👆👆👆👆👆👆👆👆👉🤛👈👊👉👉👆👉👇🤜👆🤛👆👆👉👆👆👉👆👆👆🤜👉🤜👇👉👆👆👆👈👈👆👆👆👉🤛👈👈🤛👉👇👇👇👇👇👊👉👇👉👆👆👆👊👊👆👆👆👊👉👇👊👈👈👆🤜👉🤜👆👉👆🤛👉👉🤛👈👇👇👇👇👇👇👇👇👇👇👇👇👇👇👊👉👉👊👆👆👆👊👇👇👇👇👇👇👊👇👇👇👇👇👇👇👇👊👉👆👊👉👆👊')
